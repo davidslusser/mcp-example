@@ -7,7 +7,7 @@ from .. import models, schemas
 from ..database import get_db
 
 router = APIRouter(
-    prefix="/products", tags=["products"], responses={404: {"description": "Not found"}}
+    prefix="/products", tags=["Products"], responses={404: {"description": "Not found"}}
 )
 
 

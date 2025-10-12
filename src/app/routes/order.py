@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -5,7 +7,7 @@ from .. import models, schemas
 from ..database import get_db
 
 router = APIRouter(
-    prefix="/orders", tags=["orders"], responses={404: {"description": "Not found"}}
+    prefix="/orders", tags=["Orders"], responses={404: {"description": "Not found"}}
 )
 
 
@@ -67,3 +69,58 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_order)
     return db_order
+
+
+@router.get("/", response_model=List[schemas.Order])
+def read_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    orders = db.query(models.Order).offset(skip).limit(limit).all()
+    return orders
+
+
+@router.get("/{order_id}", response_model=schemas.Order)
+def read_order(order_id: int, db: Session = Depends(get_db)):
+    db_order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return db_order
+
+
+@router.put("/{order_id}/status", response_model=schemas.Order)
+def update_order_status(order_id: int, status: str, db: Session = Depends(get_db)):
+    db_order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    valid_statuses: set[str] = {"pending", "shipped", "delivered", "cancelled"}
+    if status not in valid_statuses:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}",
+        )
+
+    db_order.status = status
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
+@router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_order(order_id: int, db: Session = Depends(get_db)):
+    db_order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # Restock products
+    if db_order.status != "cancelled":
+        for item in db_order.items:
+            product = (
+                db.query(models.Product)
+                .filter(models.Product.id == item.product_id)
+                .first()
+            )
+            if product:
+                product.stock += item.quantity
+
+    db.delete(db_order)
+    db.commit()
+    return None
