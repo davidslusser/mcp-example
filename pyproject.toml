@@ -1,0 +1,66 @@
+[project]
+dependencies = [
+    "fastapi==0.115.5",
+    "fastapi-mcp==0.4.0",
+    "uvicorn[standard]==0.32.1",
+    "sqlalchemy==2.0.36",
+    "pydantic==2.11.7",
+    "pydantic-settings==2.10.1",
+    "python-dotenv==1.0.0",
+]
+description = "A FastAPI project using MCP"
+readme = "README.md"
+keywords = ["fastapi", "mcp", "example"]
+license = { file = "LICENSE" }
+name = "mcp-example"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = [
+    "bandit",
+    "isort",
+    "mypy",
+    "mypy-extensions",
+    "ruff",
+    "setuptools",
+    "types-python-dateutil",
+    "types-requests",
+    "typinhg-extensions",
+
+]
+
+[tool.bandit]
+exclude_dirs = [
+    "tests", "venv"
+    ]
+skips = ["B311"]
+
+[tool.mypy]
+disable_error_code = ["annotation-unchecked"]
+exclude = [
+    "tests/.*",
+    "venv/.*"
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+exclude = [
+    "tests",
+    "venv"
+]
+line-length = 120
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["."]
+exclude = ["."]
+namespaces = false
