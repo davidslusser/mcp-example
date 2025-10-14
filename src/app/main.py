@@ -40,4 +40,5 @@ def read_root():
 
 
 mcp = FastApiMCP(app)
-mcp.mount()
+# mcp.mount()
+mcp.mount_http()
