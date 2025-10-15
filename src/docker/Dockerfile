@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.13-alpine
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY pyproject.toml .
 
 # Install dependencies directly from pyproject.toml
 RUN pip install --upgrade pip && \
-    pip install .
+    pip install .[docker]
 
 
 # Now copy the app source

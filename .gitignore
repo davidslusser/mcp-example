@@ -206,3 +206,7 @@ cython_debug/
 
 # project specific ignores
 local_test
+src/envs/*
+!src/envs/.env.template
+!src/envs/.env-compose.template
+!src/envs/.env.test

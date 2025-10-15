@@ -1,0 +1,27 @@
+services:
+  web:
+    image: mcp-fastapi:latest
+    container_name: fastapi
+    env_file:
+      - ../envs/.env.docker-compose
+    build:
+      context: ../..
+      dockerfile: src/docker/Dockerfile
+    command: python run.py
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    container_name: mcp-postgres
+    volumes:
+      - mcp_example_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - ../envs/.env.docker-compose
+
+volumes:
+  mcp_example_postgres_data:
