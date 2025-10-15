@@ -1,20 +1,33 @@
-FROM python:3.13-alpine
+# ---------- Stage 1: Builder ----------
+FROM python:3.13-alpine AS builder
 
 WORKDIR /app
 
+# Environment settings
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
 
-# Copy only the dependency file first (for caching)
+# Install build dependencies
+RUN apk add --no-cache build-base
+
+# Copy dependency file
 COPY pyproject.toml .
 
-# Install dependencies directly from pyproject.toml
+# Install dependencies into a local directory (no system-wide install)
 RUN pip install --upgrade pip && \
-    pip install .[docker]
+    pip install --prefix=/install .[docker]
 
 
-# Now copy the app source
+# ---------- Stage 2: Runtime ----------
+FROM python:3.13-alpine
+
+WORKDIR /app
+ENV PYTHONPATH=/app
+
+# Copy only the installed packages from builder
+COPY --from=builder /install /usr/local
+
+# Copy application source
 COPY src/app/ /app/app/
 COPY src/run.py /app/run.py
 
