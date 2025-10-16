@@ -36,6 +36,9 @@ dev = [
     "typing-extensions",
 
 ]
+docker = [
+    "psycopg2-binary",
+]
 
 [tool.bandit]
 exclude_dirs = [
