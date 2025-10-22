@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mcp import FastApiMCP
@@ -8,7 +10,7 @@ from .routes import customer_router, order_router, product_router
 app = FastAPI(
     description="A FastAPI application using MCP",
     title="My FastAPI Application",
-    version="1.0.0",
+    version=os.environ.get("IMAGE_TAG", "1.0.0"),
 )
 
 # Add CORS middleware
