@@ -21,6 +21,9 @@ RUN pip install --upgrade pip && \
 # ---------- Stage 2: Runtime ----------
 FROM python:3.13-alpine
 
+ARG IMAGE_TAG=dev
+ENV IMAGE_TAG=${IMAGE_TAG}
+
 WORKDIR /app
 ENV PYTHONPATH=/app
 
